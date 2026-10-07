@@ -1,0 +1,148 @@
+##Compte_Rendue_TP1
+Mr ADANE_Tahar_meziane / Gr3_I2A
+
+########## Dans ce TP1 on a vue :#############
+
+ 1/Instalation de l'environement 
+ 2/Importer les bibliotheque python nécéssaire pour le traitement d'image 
+ 3/Lecture et affichage  et Modification d'images
+ 4/Manipulations simples sur des images numériques(Redimensionner ,Cropper, Appliquer un flou Gaussien  )
+ 5/Histogramme d’une image
+
+-Exo2: 
+
+import cv2  <- bibliotheque 
+imread('chemin',filtre_de_lecture ) <- importer une image 
+cv2.waitKey(0) <- on affiche jusqu'a une touche du clavier
+pixel = img[100, 150]<- lire un pixel
+height, width, channels = img.shape <- récuperer les dimenssion de l'image 
+
+-Exo3 : 
+
+Image couleur
+     ↓
+cv2.cvtColor()
+     ↓
+Image niveaux de gris
+     ↓
+Parcourir chaque pixel
+     ↓
+pixel <= 80 ?
+   ↙       ↘
+ OUI       NON
+  ↓         ↓
+  0        255
+NOIR      BLANC
+
+-Exo4 : 
+1/ Le découpage utilise l'indexation NumPy : im3 = im1[y1:y2, x1:x2]
+2/ créer une vraie copie de l'image : im4 = im1.copy()   
+3/ Écrire du texte sur une image : 
+cv2.putText(
+    image,
+    "Texte",
+    (x, y),
+    cv2.FONT_HERSHEY_SIMPLEX,
+    taille,
+    couleur,
+    epaisseur
+)
+4/ Faire une rotation : im5 = cv2.rotate(image, code_rotation)
+Principaux codes :
+cv2.ROTATE_90_CLOCKWISE
+cv2.ROTATE_90_COUNTERCLOCKWISE
+cv2.ROTATE_180
+
+5/ Flou gaussien : cv2.GaussianBlur(image, (largeur, hauteur), sigma)
+
+-Exo5 : 
+# Histogramme d’une image
+
+Un **histogramme** représente la répartition des valeurs des pixels d’une image. Pour une image en niveaux de gris, les pixels ont des valeurs de **0 à 255**. L’histogramme indique combien de pixels possèdent chaque valeur.
+
+```text
+Image                    Histogramme
+┌────┬────┬────┐
+│ 10 │ 20 │ 20 │           hist[10] = 1
+│ 30 │ 20 │ 50 │    →      hist[20] = 3
+│ 10 │ 50 │ 50 │           hist[30] = 1
+└────┴────┴────┘            hist[50] = 3
+```
+
+## 1. Fonction prédéfinie `cv2.calcHist()`
+
+OpenCV permet de calculer automatiquement l’histogramme avec :
+
+```python
+hist1 = cv2.calcHist([im1], [0], None, [256], [0, 256])
+```
+
+Les paramètres sont :
+
+```text
+[im1]    → image à analyser
+[0]      → canal à analyser
+None     → aucun masque, toute l’image
+[256]    → 256 classes (valeurs 0 à 255)
+[0,256]  → intervalle des valeurs
+```
+
+Pour une image couleur `im2`, OpenCV utilise l’ordre **BGR** :
+
+```text
+[0] → Bleu
+[1] → Vert
+[2] → Rouge
+```
+
+Donc :
+
+```python
+hist2_B = cv2.calcHist([im2], [0], None, [256], [0, 256])
+hist2_G = cv2.calcHist([im2], [1], None, [256], [0, 256])
+hist2_R = cv2.calcHist([im2], [2], None, [256], [0, 256])
+```
+
+## 2. Affichage avec Matplotlib
+
+On utilise :
+
+```python
+import matplotlib.pyplot as plt
+```
+
+Pour afficher `hist1` :
+
+```python
+plt.plot(hist1)
+plt.title("Histogramme de im1")
+plt.xlabel("Niveau de gris")
+plt.ylabel("Nombre de pixels")
+plt.show()
+```
+
+```text
+Nombre de pixels
+      ↑
+      │       /\
+      │   /\ /  \__
+      │__/  \_______
+      └────────────────→
+        0          255
+         Valeur du pixel
+```
+
+Pour les trois histogrammes de `im2` dans une seule fenêtre :
+
+```python
+plt.plot(hist2_B, label="Bleu")
+plt.plot(hist2_G, label="Vert")
+plt.plot(hist2_R, label="Rouge")
+plt.legend()
+plt.show()
+
+
+`plt.plot()` trace la courbe, `plt.title()` donne le titre, `plt.xlabel()` et `plt.ylabel()` nomment les axes, `plt.legend()` affiche la légende et `plt.show()` affiche le graphique.
+
+
+
